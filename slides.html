@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage ETNIC 2026 · Patrick PREDA</title>
+
+<!-- Reveal.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/black.min.css">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   THEME OVERRIDE · Cyber / ULB
+   ============================================================ */
+:root {
+  --ulb:      #0046AD;
+  --cyan:     #00D4FF;
+  --green:    #00FF9D;
+  --red:      #FF4757;
+  --bg:       #07090F;
+  --bg2:      #0D1117;
+  --bg3:      #161B27;
+  --card:     #1A2035;
+  --border:   rgba(0,212,255,0.2);
+  --text:     #E8EAF0;
+  --muted:    #6B7280;
+  --radius:   12px;
+}
+
+.reveal-viewport { background: var(--bg); }
+.reveal { font-family: 'Inter', sans-serif; font-size: 36px; color: var(--text); }
+.reveal .slides { text-align: left; }
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: 'Inter', sans-serif;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.reveal h1 { font-size: 2.4em; font-weight: 900; line-height: 1.1; }
+.reveal h2 { font-size: 1.5em; font-weight: 700; margin-bottom: 0.6em; }
+.reveal h3 { font-size: 1.1em; font-weight: 600; color: var(--cyan); }
+.reveal p, .reveal li { font-size: 0.7em; line-height: 1.65; color: var(--text); }
+.reveal ul { list-style: none; padding: 0; margin: 0; }
+.reveal ul li::before {
+  content: "›";
+  color: var(--cyan);
+  font-weight: 700;
+  margin-right: 0.4em;
+}
+.reveal a { color: var(--cyan); }
+.reveal code { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+.reveal pre { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.8em 1em; font-size: 0.55em; }
+
+/* ── Global slide padding ─────────────────────────────────── */
+.reveal .slides section { padding: 0 3%; box-sizing: border-box; }
+
+/* ── Gradient accent line ─────────────────────────────────── */
+.accent-line {
+  height: 3px;
+  background: linear-gradient(90deg, var(--ulb), var(--cyan), var(--green));
+  border-radius: 2px;
+  margin-bottom: 1.2em;
+  width: 60px;
+}
+
+/* ── Chip / badge ─────────────────────────────────────────── */
+.chip {
+  display: inline-block;
+  background: rgba(0,212,255,0.12);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  font-size: 0.45em;
+  font-weight: 600;
+  padding: 0.3em 0.8em;
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+}
+.chip.green  { background: rgba(0,255,157,0.1);  border-color: rgba(0,255,157,0.3);  color: var(--green); }
+.chip.red    { background: rgba(255,71,87,0.12); border-color: rgba(255,71,87,0.3);  color: var(--red); }
+.chip.blue   { background: rgba(0,70,173,0.2);   border-color: rgba(0,70,173,0.5);   color: #6EA8FE; }
+
+/* ── Card ─────────────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1em 1.2em;
+  margin: 0.4em 0;
+}
+.card-title {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 0.4em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.card-title i { font-size: 0.9em; }
+.card p, .card li { font-size: 0.6em; }
+
+/* ── Grid helpers ─────────────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.7em; }
+
+/* ── Stat box ─────────────────────────────────────────────── */
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1em;
+  text-align: center;
+}
+.stat .num {
+  font-size: 1.6em;
+  font-weight: 900;
+  color: var(--cyan);
+  line-height: 1;
+  display: block;
+}
+.stat .label { font-size: 0.45em; color: var(--muted); margin-top: 0.3em; }
+
+/* ── Timeline ─────────────────────────────────────────────── */
+.timeline { display: flex; gap: 0; position: relative; margin-top: 0.8em; }
+.tl-item {
+  flex: 1;
+  position: relative;
+  padding: 0 0.3em;
+}
+.tl-item.susp .tl-bar { background: var(--red) !important; opacity: 0.6; }
+.tl-bar {
+  height: 22px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ulb), var(--cyan));
+  margin-bottom: 0.3em;
+}
+.tl-label { font-size: 0.3em; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Gantt ────────────────────────────────────────────────── */
+.gantt { width: 100%; font-size: 0.45em; }
+.gantt-row { display: flex; align-items: center; margin: 0.3em 0; gap: 0.5em; }
+.gantt-label { width: 160px; flex-shrink: 0; color: var(--text); font-size: 0.95em; text-align: right; }
+.gantt-track { flex: 1; height: 18px; background: var(--bg3); border-radius: 4px; position: relative; }
+.gantt-bar {
+  position: absolute;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ulb), var(--cyan));
+}
+.gantt-bar.susp { background: var(--red) !important; opacity: 0.7; }
+.gantt-bar.rapport { background: linear-gradient(90deg, var(--green), #00b894); }
+
+/* ── Architecture box ─────────────────────────────────────── */
+.arch-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8em 1em;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.42em;
+  color: var(--cyan);
+  line-height: 1.7;
+  white-space: pre;
+}
+
+/* ── Cover specific ───────────────────────────────────────── */
+.cover-tag {
+  font-size: 0.4em;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--cyan);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.8em;
+}
+.cover-meta { font-size: 0.42em; color: var(--muted); margin-top: 1.2em; line-height: 1.9; }
+.cover-meta strong { color: var(--text); }
+
+/* ── Skill row ────────────────────────────────────────────── */
+.skill-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin: 0.3em 0;
+  font-size: 0.55em;
+}
+.skill-name { width: 140px; flex-shrink: 0; color: var(--text); }
+.skill-bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; }
+.skill-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--ulb), var(--cyan));
+}
+.skill-lvl { width: 30px; font-size: 0.85em; color: var(--cyan); font-family: 'JetBrains Mono', monospace; }
+
+/* ── Section divider slide ────────────────────────────────── */
+.divider-num {
+  font-size: 5em;
+  font-weight: 900;
+  color: rgba(0,212,255,0.06);
+  position: absolute;
+  top: -0.15em;
+  left: -0.05em;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── Footer on slides ─────────────────────────────────────── */
+.slide-footer {
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  font-size: 0.28em;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Highlight ────────────────────────────────────────────── */
+.hl  { color: var(--cyan); font-weight: 700; }
+.hlg { color: var(--green); font-weight: 700; }
+.hlr { color: var(--red); font-weight: 700; }
+
+/* ── Reveal overrides ─────────────────────────────────────── */
+.reveal .progress { background: rgba(0,212,255,0.1); }
+.reveal .progress span { background: var(--cyan); }
+.reveal .controls { color: var(--cyan); }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 1 · COVER
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="fade">
+  <div class="cover-tag">Stage STAG-Y-006 &nbsp;·&nbsp; Cybersécurité opérationnelle</div>
+  <div class="accent-line" style="width:80px"></div>
+  <h1>Stage à l'ETNIC<br><span style="color:var(--cyan)">Sécurité des SI</span><br>de la FWB</h1>
+  <div class="cover-meta">
+    <strong>Patrick PREDA</strong> &nbsp;·&nbsp; Master Cybersécurité ULB<br>
+    <strong>Maître de stage :</strong> Laurent Servais &nbsp;·&nbsp;
+    <strong>Promoteur :</strong> Jérôme Dossogne<br>
+    <strong>Période :</strong> 2 mars &rarr; 29 mai 2026 &nbsp;·&nbsp; 12 semaines
+  </div>
+  <div class="slide-footer">ETNIC &nbsp;·&nbsp; ULB · M-SECUC &nbsp;·&nbsp; 2026</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 2 · PLAN
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>Au programme <span style="font-weight:300;color:var(--muted)">· 15 min</span></h2>
+  <div class="grid-2" style="margin-top:0.6em">
+    <div class="card fragment">
+      <div class="card-title"><i class="fa-solid fa-building"></i> Contexte</div>
+      <ul>
+        <li>ETNIC · qui, quoi, pourquoi</li>
+        <li>Centre de Compétences Sécurité</li>
+        <li>Objectifs du stage</li>
+      </ul>
+    </div>
+    <div class="card fragment">
+      <div class="card-title"><i class="fa-solid fa-timeline"></i> Déroulement</div>
+      <ul>
+        <li>12 semaines, 5 missions</li>
+        <li>Vue chronologique</li>
+      </ul>
+    </div>
+    <div class="card fragment">
+      <div class="card-title"><i class="fa-solid fa-code"></i> Réalisations</div>
+      <ul>
+        <li>CertFR Monitor</li>
+        <li>GoPhish</li>
+        <li>PNDS</li>
+        <li>RapidETNIC</li>
+      </ul>
+    </div>
+    <div class="card fragment">
+      <div class="card-title"><i class="fa-solid fa-graduation-cap"></i> Bilan</div>
+      <ul>
+        <li>Compétences acquises</li>
+        <li>Retour d'expérience</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">Plan</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 3 · ETNIC
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>L'ETNIC</h2>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:0.62em;margin-bottom:0.8em">
+        Opérateur ICT de la <span class="hl">Fédération Wallonie-Bruxelles</span>.
+        Mutualise les ressources IT des organismes publics francophones belges.
+      </p>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-location-dot"></i> Siège</div>
+        <p>Bd du Roi Albert II, 37 · 1030 Bruxelles</p>
+      </div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-shield-halved"></i> Centre de Compétences Sécurité</div>
+        <ul>
+          <li><span class="hl">P3SI</span> · outils sécurité (SIEM, EDR, scanner)</li>
+          <li><span class="hl">IAM</span> · identités &amp; accès</li>
+          <li><span class="hl">TAR</span> · traçabilité &amp; reporting</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="grid-2" style="gap:0.6em">
+        <div class="stat"><span class="num"><i class="fa-solid fa-server" style="font-size:0.7em"></i></span><div class="label">Milliers d'assets gérés</div></div>
+        <div class="stat"><span class="num" style="color:var(--green)">Hybride</span><div class="label">On-premise + Cloud</div></div>
+        <div class="stat"><span class="num" style="font-size:0.9em;color:#6EA8FE">FWB</span><div class="label">Organismes desservis</div></div>
+        <div class="stat"><span class="num" style="color:var(--green)">SOC</span><div class="label">Opérationnel 24/7</div></div>
+      </div>
+      <div class="card" style="margin-top:0.6em">
+        <div class="card-title"><i class="fa-solid fa-user-tie"></i> Encadrement</div>
+        <p><strong>Laurent Servais</strong><br>Resp. Centre de Compétences Sécurité</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Contexte</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 4 · OBJECTIFS
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>Objectifs du stage <span class="chip">STAG-Y-006</span></h2>
+  <div class="grid-2" style="margin-top:0.5em">
+    <div>
+      <h3><i class="fa-solid fa-file-contract" style="margin-right:0.3em"></i>Convention</h3>
+      <ul style="margin-top:0.3em">
+        <li class="fragment">Contribuer aux activités opérationnelles SOC</li>
+        <li class="fragment">Améliorer détection &amp; réponse aux incidents</li>
+        <li class="fragment">Optimisation gestion des vulnérabilités</li>
+        <li class="fragment">Usage des <span class="hl">API de sécurité</span> &amp; scripting</li>
+        <li class="fragment">Approche orientée menace (MITRE ATT&amp;CK)</li>
+      </ul>
+    </div>
+    <div>
+      <h3><i class="fa-solid fa-bullseye" style="margin-right:0.3em"></i>Personnels</h3>
+      <ul style="margin-top:0.3em">
+        <li class="fragment">Expérience concrète en SOC de production</li>
+        <li class="fragment">Développer des outils de sécurité (Python, TS)</li>
+        <li class="fragment">Comprendre les processus d'un CSIRT/SOC FR</li>
+        <li class="fragment">Confronter théorie académique à la réalité terrain</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">Contexte</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 5 · TIMELINE
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>12 semaines · 5 missions</h2>
+
+  <div class="gantt" style="margin-top:0.8em">
+    <!-- Header semaines -->
+    <div class="gantt-row" style="font-size:0.38em;color:var(--muted)">
+      <div style="width:160px;flex-shrink:0"></div>
+      <div style="flex:1;display:flex">
+        <div style="flex:1;text-align:center">S1</div><div style="flex:1;text-align:center">S2</div>
+        <div style="flex:1;text-align:center">S3</div><div style="flex:1;text-align:center">S4</div>
+        <div style="flex:1;text-align:center">S5</div><div style="flex:1;text-align:center">S6</div>
+        <div style="flex:1;text-align:center;color:var(--red)">S7</div>
+        <div style="flex:1;text-align:center">S8</div><div style="flex:1;text-align:center">S9</div>
+        <div style="flex:1;text-align:center">S10</div><div style="flex:1;text-align:center">S11</div>
+        <div style="flex:1;text-align:center">S12</div><div style="flex:1;text-align:center">S13</div>
+      </div>
+    </div>
+
+    <!-- Onboarding: S1-S2 = 0-2/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">Onboarding &amp; Lecture</div>
+      <div class="gantt-track">
+        <div class="gantt-bar" style="left:0%;width:15.4%"></div>
+      </div>
+    </div>
+    <!-- CertFR: S3 = 2-3/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">CertFR Monitor</div>
+      <div class="gantt-track">
+        <div class="gantt-bar" style="left:15.4%;width:7.7%"></div>
+      </div>
+    </div>
+    <!-- GoPhish: S4-S6 = 3-6/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">GoPhish</div>
+      <div class="gantt-track">
+        <div class="gantt-bar" style="left:23.1%;width:23.1%"></div>
+      </div>
+    </div>
+    <!-- PNDS: S6-S8 = 5-8/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">PNDS</div>
+      <div class="gantt-track">
+        <div class="gantt-bar" style="left:38.5%;width:23.1%"></div>
+      </div>
+    </div>
+    <!-- Suspension: S7 = 6-7/13 -->
+    <div class="gantt-row">
+      <div class="gantt-label" style="color:var(--red)">Suspension</div>
+      <div class="gantt-track">
+        <div class="gantt-bar susp" style="left:46.2%;width:7.7%"></div>
+      </div>
+    </div>
+    <!-- RapidETNIC: S9-S12 = 8-12/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">RapidETNIC</div>
+      <div class="gantt-track">
+        <div class="gantt-bar" style="left:61.5%;width:30.8%"></div>
+      </div>
+    </div>
+    <!-- Rapport: S12-S13 = 11-13/13 -->
+    <div class="gantt-row fragment">
+      <div class="gantt-label">Rapport</div>
+      <div class="gantt-track">
+        <div class="gantt-bar rapport" style="left:84.6%;width:15.4%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1em;margin-top:0.6em;font-size:0.38em;color:var(--muted)">
+    <span>◼ <span style="color:var(--cyan)">Cyan</span> = réalisation</span>
+    <span>◼ <span style="color:var(--green)">Vert</span> = rédaction</span>
+    <span>◼ <span style="color:var(--red)">Rouge</span> = suspension</span>
+    <span style="color:var(--text)">&nbsp;· 13 avr–17 avr : semaine non travaillée</span>
+  </div>
+  <div class="slide-footer">Déroulement</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 6 · CERTFR MONITOR
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>CertFR Monitor <span class="chip">S3</span></h2>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:0.6em;margin-bottom:0.6em">
+        Dashboard de <span class="hl">veille temps réel</span> des publications
+        CERT-FR avec alertes email automatiques.
+      </p>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-layer-group"></i> Stack</div>
+        <div style="font-size:0.5em;display:grid;grid-template-columns:1fr 1fr;gap:0.3em 1em">
+          <span><span class="chip">DB</span> PostgreSQL 16</span>
+          <span><span class="chip">API</span> Node.js / TypeScript</span>
+          <span><span class="chip">UI</span> Next.js 14</span>
+          <span><span class="chip">OPS</span> Docker Compose</span>
+          <span><span class="chip">MAIL</span> SMTP / Resend</span>
+          <span><span class="chip">SCHED</span> Cron 15 min</span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-rss"></i> 7 flux RSS surveillés</div>
+        <div style="font-size:0.48em;display:flex;flex-wrap:wrap;gap:0.3em;margin-top:0.2em">
+          <span class="chip red">alerte</span>
+          <span class="chip">avis</span>
+          <span class="chip blue">cti</span>
+          <span class="chip">ioc</span>
+          <span class="chip">dur</span>
+          <span class="chip">scada</span>
+          <span class="chip">actualite</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="arch-box">CERT-FR RSS Feeds
+       │
+       ▼
+Backend Node.js/TS
+├─ Cron (15 min)
+├─ Dedup par GUID
+├─ Stock. PostgreSQL
+└─ Alerte email
+       │
+       ▼
+Frontend Next.js
+└─ Dashboard filtrable
+   logs · stats · items</div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-plug"></i> API REST</div>
+        <ul style="font-size:0.48em">
+          <li><code>GET /api/items</code> · liste paginée + filtres</li>
+          <li><code>GET /api/stats</code> · compteurs par flux</li>
+          <li><code>POST /api/fetch</code> · déclenchement manuel</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Réalisations · 1/4</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 7 · GOPHISH
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>GoPhish · Phishing interne <span class="chip">S4–S6</span></h2>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:0.6em;margin-bottom:0.6em">
+        Infrastructure de <span class="hl">campagne phishing simulé</span> pour
+        sensibiliser les collaborateurs ETNIC.
+      </p>
+      <div class="arch-box">Cloudflare DNS (orange ☁)
+       │
+       ▼
+Nginx Proxy Manager
+├─ gophish.preda.be
+│   └─► GoPhish :3333 (admin)
+└─ phish.preda.be
+    └─► GoPhish :8080 (pages)</div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-shield-halved"></i> Sécurité infra</div>
+        <ul style="font-size:0.5em">
+          <li>TLS Cloudflare origin cert sur les 2 domaines</li>
+          <li>Admin protégé par Access List NPM</li>
+          <li>Réseau Docker isolé</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-circle-check" style="color:var(--green)"></i> Livrables</div>
+        <ul style="font-size:0.54em">
+          <li>Infrastructure complète déployée &amp; validée</li>
+          <li>Scénarios phishing simulé créés et testés</li>
+          <li>Envois de test vers adresses de contrôle <span class="chip green">OK</span></li>
+          <li>Documentation P3SI remise pour réutilisation</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:0.5em;border-color:rgba(255,71,87,0.3)">
+        <div class="card-title" style="color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i> Limite</div>
+        <p style="font-size:0.52em">
+          Aucune campagne lancée en production : contraintes organisationnelles
+          (validation RH, communication direction) non réunies dans le délai imparti.
+          Infrastructure prête pour un déploiement ultérieur.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Réalisations · 2/4</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 8 · PNDS
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>PNDS · Diagnostic réseau <span class="chip">S6–S8</span></h2>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:0.6em;margin-bottom:0.5em">
+        Script <span class="hl">PowerShell</span> autonome pour le Service Desk ETNIC.
+        Collecte toutes les infos réseau d'un poste en un clic, sans droits admin.
+      </p>
+      <div class="card">
+        <div class="card-title"><i class="fa-brands fa-windows"></i> 10 sections collectées</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.2em 0.5em;font-size:0.48em;margin-top:0.2em">
+          <span>① Config IP <code>ipconfig /all</code></span>
+          <span>② DNS système</span>
+          <span>③ DNS internes forcés</span>
+          <span>④ Ping (int. + ext.)</span>
+          <span>⑤ Traceroute</span>
+          <span>⑥ Services VPN/EDR</span>
+          <span>⑦ Détection VPN</span>
+          <span>⑧ Table de routage</span>
+          <span>⑨ Test HTTPS</span>
+          <span>⑩ Cache DNS</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-rocket"></i> Déploiement</div>
+        <ul style="font-size:0.52em">
+          <li><span class="hl">Manuel</span> : run direct PowerShell</li>
+          <li><span class="hl">GPO</span> : raccourci Bureau masse, 0 droits admin</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-file-lines"></i> Sortie</div>
+        <p style="font-size:0.5em">
+          Fichier <code>.txt</code> horodaté sur le Bureau :<br>
+          <code>Diagnostic_Reseau_20260420_141523.txt</code><br><br>
+          Prêt à joindre au ticket Service Desk.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Réalisations · 3/4</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 9 · RAPIDETNIC (ARCHI)
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>RapidETNIC <span class="chip">S9–S12</span></h2>
+  <div class="grid-2">
+    <div>
+      <p style="font-size:0.58em;margin-bottom:0.5em">
+        Croisement automatisé <span class="hl">Rapid7 InsightVM</span>
+        vs <span class="hl">ServiceNow CMDB</span> pour détecter les écarts
+        d'inventaire et les assets décommissionnés encore scannés.
+      </p>
+      <div class="arch-box" style="font-size:0.38em">fetch_r7.py      fetch_snow.py
+     │                  │
+     ▼                  ▼
+ EU Cloud API     SNOW REST API
+ (lecture)        (lecture)
+     └──────┬───────┘
+            ▼
+        fetch.py
+     Matching hostname
+     (IP publique fallback)
+            │
+     ┌──────┴──────┐
+     │             │
+  decomm        matched /
+  in_r7        in_r7_only
+     │
+  On-prem API InsightVM
+  ├─ Tag "deprecated"
+  └─ DELETE agent</div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-key"></i> Règle de matching</div>
+        <ul style="font-size:0.5em">
+          <li><span class="hl">Clé primaire :</span> hostname normalisé</li>
+          <li>SNOW <code>asset_tag</code> après le dernier <code>/</code></li>
+          <li><span class="hlr">IP fallback bloqué</span> si plage privée</li>
+          <li>10.x / 172.16-31.x / 192.168.x = collision VLAN</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-tags"></i> Actions automatiques</div>
+        <ul style="font-size:0.5em">
+          <li>Tag <code>deprecated</code> via <code>PUT /api/3/assets/{id}/tags/{tagId}</code></li>
+          <li>Suppression agent <code>DELETE /api/3/agents/{id}</code></li>
+          <li>Asset conservé (scans réseau continuent)</li>
+        </ul>
+      </div>
+      <div class="card" style="margin-top:0.5em">
+        <div class="card-title"><i class="fa-solid fa-circle-nodes"></i> Deux API Rapid7</div>
+        <p style="font-size:0.48em">
+          <span class="hl">EU Cloud</span> (lecture assets) + <span class="hl">On-prem :3780</span> (write ops)
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Réalisations · 4/4</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 10 · RAPIDETNIC (CATEGORIES)
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>RapidETNIC · Résultats <span class="chip green">18 mai 2026</span></h2>
+  <div class="grid-3" style="margin-top:0.5em">
+    <div class="stat fragment" style="border-color:rgba(255,71,87,0.4)">
+      <span class="num" style="color:var(--red)"><i class="fa-solid fa-skull-crossbones"></i></span>
+      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
+        Décommissionnés<br>encore scannés
+      </div>
+      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">Tag + suppression agent</div>
+    </div>
+    <div class="stat fragment" style="border-color:rgba(255,165,0,0.4)">
+      <span class="num" style="color:orange"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
+        Installés absents<br>de Rapid7
+      </div>
+      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">Hors scope scan</div>
+    </div>
+    <div class="stat fragment">
+      <span class="num" style="color:var(--green)"><i class="fa-solid fa-circle-check"></i></span>
+      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
+        Matchés<br>à jour
+      </div>
+      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">OK</div>
+    </div>
+  </div>
+  <div style="margin-top:0.6em;font-size:0.48em;color:var(--muted);text-align:center">
+    ⬆ Compléter avec les métriques réelles avant la présentation
+  </div>
+
+  <div class="card fragment" style="margin-top:0.6em">
+    <div class="card-title"><i class="fa-solid fa-table"></i> 5 catégories de sortie</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3em 1.5em;font-size:0.48em;margin-top:0.3em">
+      <span><span class="chip red">decomm_in_r7</span> SNOW hors service + encore scanné</span>
+      <span><span class="chip">installed_not_in_r7</span> Installé mais absent de Rapid7</span>
+      <span><span class="chip">matched_outdated</span> OS EOL ou scan &gt; 90j</span>
+      <span><span class="chip green">matched_current</span> Tout OK</span>
+      <span><span class="chip blue">in_r7_only</span> Pas de CI dans SNOW</span>
+    </div>
+  </div>
+  <div class="slide-footer">Réalisations · RapidETNIC</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 11 · COMPETENCES
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="slide">
+  <div class="accent-line"></div>
+  <h2>Compétences acquises</h2>
+  <div class="grid-2" style="margin-top:0.3em">
+    <div>
+      <h3 style="margin-bottom:0.4em"><i class="fa-solid fa-wrench"></i> Techniques</h3>
+      <div class="skill-row fragment"><div class="skill-name">API Security</div><div class="skill-bar-track"><div class="skill-bar" style="width:92%"></div></div><div class="skill-lvl">★★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">Python</div><div class="skill-bar-track"><div class="skill-bar" style="width:90%"></div></div><div class="skill-lvl">★★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">Docker</div><div class="skill-bar-track"><div class="skill-bar" style="width:88%"></div></div><div class="skill-lvl">★★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">Vuln. mgmt</div><div class="skill-bar-track"><div class="skill-bar" style="width:88%"></div></div><div class="skill-lvl">★★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">Node.js / TS</div><div class="skill-bar-track"><div class="skill-bar" style="width:72%"></div></div><div class="skill-lvl">★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">SIEM / SOAR</div><div class="skill-bar-track"><div class="skill-bar" style="width:70%"></div></div><div class="skill-lvl">★</div></div>
+      <div class="skill-row fragment"><div class="skill-name">PowerShell</div><div class="skill-bar-track"><div class="skill-bar" style="width:68%"></div></div><div class="skill-lvl">★</div></div>
+    </div>
+    <div>
+      <h3 style="margin-bottom:0.4em"><i class="fa-solid fa-people-group"></i> Transversales</h3>
+      <div class="card fragment">
+        <div class="card-title"><i class="fa-solid fa-code-branch"></i> Git &amp; documentation</div>
+        <p>GitHub + GitLab ETNIC sur tous les projets. READMEs complets livrés.</p>
+      </div>
+      <div class="card fragment" style="margin-top:0.4em">
+        <div class="card-title"><i class="fa-solid fa-person-chalkboard"></i> Autonomie croissante</div>
+        <p>Specs → développement → livraison sans supervision continue.</p>
+      </div>
+      <div class="card fragment" style="margin-top:0.4em">
+        <div class="card-title"><i class="fa-solid fa-comments"></i> Communication</div>
+        <p>Restitutions régulières à L. Servais, présentations aux équipes P3SI.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">Bilan</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 12 · CONCLUSION
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="fade">
+  <div class="accent-line" style="width:80px"></div>
+  <h2>Conclusion</h2>
+  <div class="grid-3" style="margin-top:0.5em">
+    <div class="card fragment">
+      <div class="card-title" style="justify-content:center"><i class="fa-solid fa-code"></i></div>
+      <p style="text-align:center;font-size:0.54em">
+        3 outils livrés et documentés<br>
+        <span class="chip green">PNDS</span> <span class="chip">CertFR</span> <span class="chip blue">RapidETNIC</span>
+      </p>
+    </div>
+    <div class="card fragment">
+      <div class="card-title" style="justify-content:center"><i class="fa-solid fa-brain"></i></div>
+      <p style="text-align:center;font-size:0.54em">
+        Théorie académique<br>confrontée au SOC réel
+      </p>
+    </div>
+    <div class="card fragment">
+      <div class="card-title" style="justify-content:center"><i class="fa-solid fa-shield-halved"></i></div>
+      <p style="text-align:center;font-size:0.54em">
+        Posture sécurité ETNIC<br>améliorée concrètement
+      </p>
+    </div>
+  </div>
+  <div class="card fragment" style="margin-top:0.6em;border-color:rgba(0,255,157,0.3)">
+    <p style="font-size:0.6em;text-align:center;color:var(--text)">
+      Ce stage a confirmé mon intérêt pour
+      <span class="hl">la cybersécurité opérationnelle</span> et l'intersection entre
+      développement d'outils et opérations de sécurité. Dans un SOC réel, la valeur ajoutée
+      réside autant dans <span class="hlg">l'automatisation</span> que dans la détection.
+    </p>
+  </div>
+  <div class="slide-footer">Conclusion</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 13 · MERCI / Q&A
+     ══════════════════════════════════════════════════════════ -->
+<section data-transition="fade">
+  <div style="text-align:center;padding-top:0.5em">
+    <div style="font-size:0.4em;font-family:'JetBrains Mono',monospace;color:var(--cyan);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8em">
+      Fin de présentation
+    </div>
+    <h1 style="font-size:2.2em">Merci<span style="color:var(--cyan)">.</span></h1>
+    <div style="font-size:0.45em;color:var(--muted);margin-top:0.6em;line-height:2">
+      <strong style="color:var(--text)">Patrick PREDA</strong><br>
+      patrick.preda@ulb.be<br>
+      Master Cybersécurité ULB · M-SECUC
+    </div>
+    <div style="margin-top:1.2em;display:inline-flex;gap:0.8em">
+      <span class="chip">Questions ?</span>
+      <span class="chip green">Démonstrations ?</span>
+    </div>
+    <div style="margin-top:1.4em;font-size:0.35em;color:var(--muted)">
+      Repos : github.com/mytricker0 &nbsp;·&nbsp; GitLab ETNIC (interne)
+    </div>
+  </div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  transition: 'slide',
+  transitionSpeed: 'fast',
+  backgroundTransition: 'fade',
+  controls: true,
+  progress: true,
+  center: false,
+  width: 1280,
+  height: 720,
+  margin: 0.06,
+  plugins: []
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,856 @@
+%===============================================================
+%  Rapport de stage -- ETNIC 2026
+%  Patrick PREDA -- Master cybersecurite ULB -- STAG-Y-006
+%===============================================================
+\documentclass{rapport}
+
+\usepackage{lipsum}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{tcolorbox}
+\usepackage{pgfgantt}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+
+\tcbuselibrary{skins, breakable}
+
+% Couleurs ETNIC / ULB
+\definecolor{ulbblue}{RGB}{0,68,139}
+\definecolor{etnicgreen}{RGB}{0,150,100}
+\definecolor{codebg}{RGB}{245,245,245}
+\definecolor{alertred}{RGB}{200,50,50}
+
+% Boite technique
+\newtcolorbox{boitetech}[2][]{
+  colback=codebg,
+  colframe=ulbblue,
+  fonttitle=\bfseries,
+  title={#2},
+  breakable,
+  #1
+}
+
+% Config listings
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{ulbblue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{etnicgreen},
+}
+
+\title{Rapport de stage -- ETNIC}
+
+\begin{document}
+
+%===============================================================
+%  PAGE DE GARDE
+%===============================================================
+\logo{logos/ulbLogo.png}
+\titre{Rapport de stage\\[0.4em]
+       \large Cybersecurite operationnelle a l'ETNIC\\[0.2em]
+       \normalsize 2 mars 2026 -- 29 mai 2026}
+\cours{STAG-Y-006}
+
+\enseignant{
+  \textbf{Maitre de stage :}\\ Laurent \textsc{Servais}
+
+  \textbf{Promoteur ULB :} \\Jerome \textsc{Dossogne}
+}
+
+\eleves{
+  Patrick \textsc{Preda}\\
+  Noma : \textsc{615608}
+}
+
+\fairemarges
+\fairepagedegarde
+\tabledematieres
+
+%===============================================================
+%  REMERCIEMENTS
+%===============================================================
+\newpage
+\section*{Remerciements}
+\addcontentsline{toc}{section}{Remerciements}
+
+Je tiens a remercier Laurent \textsc{Servais}, responsable du Centre de
+Competences Securite d'ETNIC, pour son encadrement et la confiance accordee
+tout au long de ce stage. Je remercie egalement Tom \textsc{Pirenne} et
+l'ensemble des equipes P3SI, IAM et TAR pour leur disponibilite et leur
+partage de connaissances. Mes remerciements vont aussi a Jerome
+\textsc{Dossogne} de l'ULB pour son suivi academique.
+
+%===============================================================
+%  LISTE DES ABREVIATIONS
+%===============================================================
+\newpage
+\section*{Liste des abreviations}
+\addcontentsline{toc}{section}{Liste des abreviations}
+
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Abreviation} & \textbf{Definition} \\
+\midrule
+CERT-FR  & Centre gouvernemental francais de veille, d'alerte et de reponse aux attaques informatiques \\
+CMDB     & Configuration Management Database \\
+EDR      & Endpoint Detection et Response \\
+EPP      & Endpoint Protection Platform \\
+ETNIC    & Entreprise des Technologies Nouvelles de l'Information et de la Communication \\
+FWB      & Federation Wallonie-Bruxelles \\
+IAM      & Identity et Access Management \\
+IOC      & Indicator of Compromise \\
+MITRE    & MITRE ATT\&CK : referentiel des techniques d'attaques adversariales \\
+NPM      & Nginx Proxy Manager \\
+P3SI     & Produits et Services de Securite des Systemes d'Information \\
+PNDS     & PowerShell Network Diagnostic Script \\
+RSS      & Really Simple Syndication \\
+SCADA    & Supervisory Control and Data Acquisition \\
+SIEM     & Security Information and Event Management \\
+SNOW     & ServiceNow \\
+SOC      & Security Operations Center \\
+SOAR     & Security Orchestration, Automation and Response \\
+TAR      & Tracabilite, Audit et Reporting \\
+TLS      & Transport Layer Security \\
+VPN      & Virtual Private Network \\
+\bottomrule
+\end{tabularx}
+
+%===============================================================
+%  1. INTRODUCTION
+%===============================================================
+\newpage
+\section{Introduction}
+
+Ce rapport presente le deroulement de mon stage de fin d'etudes effectue au
+sein de l'\textbf{ETNIC} (Entreprise des Technologies Nouvelles de
+l'Information et de la Communication) du \textbf{2 mars au 29 mai 2026},
+dans le cadre du Master en cybersecurite a finalite \textit{Conception et
+Analyse de Systemes} de l'Universite libre de Bruxelles (ULB).
+
+L'ETNIC est l'operateur informatique de la Federation Wallonie-Bruxelles.
+Son Centre de Competences Securite assure la gestion de la securite
+operationnelle de l'ensemble du systeme d'information de la FWB, couvrant
+des milliers d'assets, d'utilisateurs et de services critiques.
+
+Ce stage visait a m'immerger dans un SOC operationnel reel et a contribuer
+concretement a l'amelioration de la posture de securite de l'organisation.
+J'ai eu l'opportunite de travailler sur cinq missions distinctes : la veille
+securite, l'automatisation d'inventaires, la sensibilisation au phishing, le
+diagnostic reseau et le monitoring de flux de threat intelligence.
+
+Le rapport est structure comme suit : apres une presentation de l'organisation
+et des objectifs du stage, une timeline recapitule le deroulement
+chronologique. Chaque mission est ensuite decrite techniquement, suivie d'un
+bilan des competences acquises.
+
+%===============================================================
+%  2. PRESENTATION DE L'ETNIC
+%===============================================================
+\section{Presentation de l'ETNIC}
+
+\subsection{Contexte organisationnel}
+
+L'ETNIC est l'operateur ICT de la Federation Wallonie-Bruxelles, cree pour
+mutualiser les ressources informatiques des organismes publics francophones
+belges. Son siege est situe Boulevard du Roi Albert II, 37 a 1030 Bruxelles.
+
+\begin{boitetech}{Chiffres cles}
+\begin{itemize}[noitemsep]
+  \item Entite publique au service de la FWB et de ses organismes
+  \item Gestion centralisee de l'infrastructure IT et de la cybersecurite
+  \item Plusieurs milliers d'assets geres dans le CMDB ServiceNow
+  \item Infrastructure hybride : on-premise et cloud
+\end{itemize}
+\end{boitetech}
+
+\subsection{Centre de Competences Securite}
+
+Le stage s'est deroule au sein du \textbf{Centre de Competences Securite
+(CCS)}, qui regroupe trois equipes operationnelles :
+
+\begin{itemize}
+  \item \textbf{P3SI} : Produits et Services de Securite des Systemes
+        d'Information, gestion des outils de securite (SIEM, EDR, scanner
+        de vulnerabilites, etc.) ;
+  \item \textbf{IAM} : Identity et Access Management, gestion des identites,
+        des acces et des politiques d'authentification ;
+  \item \textbf{TAR} : Tracabilite, Audit et Reporting, production des rapports
+        de securite et suivi des indicateurs.
+\end{itemize}
+
+J'ai principalement travaille avec l'equipe \textbf{P3SI}, sous la
+responsabilite de Laurent \textsc{Servais}.
+
+%===============================================================
+%  3. OBJECTIFS DU STAGE
+%===============================================================
+\section{Objectifs du stage}
+
+\subsection{Objectifs officiels (convention STAG-Y-006)}
+
+La convention de stage definit les missions suivantes :
+
+\begin{itemize}
+  \item Contribuer aux activites operationnelles du service cybersecurite ;
+  \item Ameliorer les capacites de detection et de reponse aux evenements de
+        securite ;
+  \item Participer a l'optimisation de la gestion des vulnerabilites ;
+  \item Participer a l'optimisation des services EPP/EDR et WASC ;
+  \item Integrer une approche orientee menace dans les processus de securite ;
+  \item Developper l'usage des API de solutions de securite et le scripting
+        d'automatisation.
+\end{itemize}
+
+\subsection{Objectifs personnels}
+
+Au-dela des objectifs contractuels, je souhaitais personnellement :
+
+\begin{itemize}
+  \item Acquerir une experience concrete en SOC dans un environnement de
+        production ;
+  \item Developper des competences en developpement d'outils de securite
+        (Python, TypeScript) ;
+  \item Comprendre les processus operationnels d'un CSIRT/SOC francophone ;
+  \item Confronter les concepts academiques (MITRE ATT\&CK, SIEM, SOAR) a
+        la realite terrain.
+\end{itemize}
+
+%===============================================================
+%  4. DEROULEMENT DU STAGE
+%===============================================================
+\section{Deroulement du stage}
+
+\subsection{Vue chronologique}
+
+Le stage s'est etale sur \textbf{12 semaines effectives} (13 semaines
+calendaires dont une semaine de suspension du 13 au 17 avril 2026).
+
+\begin{figure}[H]
+\centering
+\begin{ganttchart}[
+    hgrid,
+    vgrid={dotted},
+    x unit=0.72cm,
+    y unit title=0.6cm,
+    y unit chart=0.55cm,
+    title/.style={fill=ulbblue!20, draw=ulbblue},
+    title label font=\small\bfseries,
+    bar/.style={fill=ulbblue!60, rounded corners=2pt},
+    group/.style={fill=ulbblue, draw=ulbblue},
+  ]{1}{13}
+  \gantttitle{Stage ETNIC, Mars--Mai 2026}{13} \\
+  \gantttitlelist{1,...,13}{1} \\
+
+  \ganttbar{Onboarding et Lecture}{1}{2} \\
+  \ganttbar{CertFR Monitor}{3}{3} \\
+  \ganttbar{GoPhish, phishing interne}{4}{6} \\
+  \ganttbar{PNDS, diagnostic reseau}{6}{8} \\
+  \ganttbar[bar/.style={fill=alertred!40, draw=alertred,
+    rounded corners=2pt}]{Suspension}{7}{7} \\
+  \ganttbar{RapidETNIC}{9}{12} \\
+  \ganttbar{Redaction rapport}{12}{13}
+\end{ganttchart}
+\caption{Diagramme de Gantt -- deroulement du stage}
+\label{fig:gantt}
+\end{figure}
+
+\subsection{Phases}
+
+\begin{description}[leftmargin=2cm, style=nextline]
+  \item[Semaines 1--2 \small(2--13 mars)]
+    \textbf{Onboarding et phase de lecture.}
+    Prise en main de l'environnement ETNIC, des outils et des processus
+    internes. Lecture approfondie de documents de reference sur le SIEM,
+    le SOAR et le SOC.
+
+  \item[Semaine 3 \small(16--20 mars)]
+    \textbf{Moniteur CERT-FR.}
+    Developpement d'un dashboard de veille des publications CERT-FR avec
+    alertes email, backend Node.js/TypeScript et frontend Next.js.
+
+  \item[Semaines 4--6 \small(23 mars -- 10 avr.)]
+    \textbf{Campagne de sensibilisation au phishing (GoPhish).}
+    Deploiement d'une infrastructure GoPhish complete avec reverse proxy
+    Cloudflare/NPM.
+
+  \item[Semaines 6 et 8 \small(6--10 avr. et 20--24 avr.)]
+    \textbf{Script de diagnostic reseau (PNDS).}
+    Developpement d'un script PowerShell pour le Service Desk de l'ETNIC,
+    interrompu par la semaine de suspension et finalise a la reprise.
+
+  \item[Semaine 7 \small(13--17 avr.)]
+    \textit{Suspension du stage (accord avec le maitre de stage).}
+
+  \item[Semaines 9--12 \small(27 avr. -- 22 mai)]
+    \textbf{RapidETNIC.}
+    Developpement d'un outil de croisement Rapid7 InsightVM et ServiceNow
+    CMDB.
+
+  \item[Semaines 12--13 \small(18--29 mai)]
+    \textbf{Redaction du rapport de stage.}
+\end{description}
+
+%===============================================================
+%  5. PROJETS REALISES
+%===============================================================
+\section{Projets realises}
+
+%---------------------------------------------------------------
+\subsection{Onboarding et phase de lecture}
+%---------------------------------------------------------------
+
+\subsubsection{Contexte}
+
+Les deux premieres semaines ont ete consacrees a la prise en main de
+l'environnement de travail et a une phase de lecture structuree. L'objectif
+etait d'acquerir une base solide sur les technologies et approches en usage
+dans l'equipe avant de passer aux missions operationnelles.
+
+\subsubsection{Documents etudies}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{p{6.5cm}X}
+\toprule
+\textbf{Document} & \textbf{Apport principal} \\
+\midrule
+\textit{SOAR: How to Identify and Implement Security Automation Use Cases}
+  & Methodologie de selection et d'implementation de cas d'usage SOAR ;
+    criteres de priorisation des automatisations \\
+\addlinespace
+\textit{A Guidance Framework for Architecting and Deploying a Modern SIEM Solution}
+  & Architecture cible d'un SIEM moderne ; sources de donnees, regles de
+    correlation, integration dans le SOC \\
+\addlinespace
+\textit{How to Create and Maintain Security Monitoring Use Cases for Your SIEM}
+  & Cycle de vie des use cases de detection ; formalisation, test et
+    maintenance \\
+\addlinespace
+\textit{Cyberun \#44}
+  & Panorama des menaces et actualites cybersecurite francophones \\
+\bottomrule
+\end{tabularx}
+\caption{Documents de reference etudies en phase d'onboarding}
+\end{table}
+
+\subsubsection{Points cles retenus}
+
+\begin{boitetech}{Synthese SIEM et SOAR}
+\begin{itemize}[noitemsep]
+  \item Un SIEM efficace repose sur la qualite des sources de donnees
+        ingeres et la pertinence des regles de correlation, pas sur leur
+        quantite.
+  \item Le SOAR automatise les taches repetitives (enrichissement IOC,
+        blocage IP, notification) pour liberer les analystes sur les
+        incidents complexes.
+  \item La maintenance des use cases est aussi critique que leur creation :
+        un use case non revu genere du bruit ou des faux negatifs.
+  \item L'approche \textit{threat-informed defense} via MITRE ATT\&CK guide
+        le choix des detections prioritaires en fonction des TTPs
+        adversariaux observes.
+\end{itemize}
+\end{boitetech}
+
+%---------------------------------------------------------------
+\subsection{Moniteur CERT-FR}
+%---------------------------------------------------------------
+
+\subsubsection{Contexte et objectifs}
+
+Le CERT-FR publie quotidiennement des bulletins de securite critiques :
+alertes, avis, IOC, bulletins SCADA, threat intelligence. L'ETNIC, comme
+de nombreuses organisations francophones, suit ces publications pour
+prioriser ses actions de remediation.
+
+L'objectif etait de developper un outil centralise permettant de :
+\begin{itemize}
+  \item Agreger en temps reel tous les flux RSS du CERT-FR ;
+  \item Alerter par email a chaque nouvelle publication ;
+  \item Offrir un dashboard web filtrable pour la consultation.
+\end{itemize}
+
+\subsubsection{Architecture}
+
+\begin{boitetech}{Stack technique}
+\begin{tabular}{ll}
+\textbf{Composant} & \textbf{Technologie} \\
+Base de donnees    & PostgreSQL 16 \\
+Backend            & Node.js / TypeScript / Express \\
+Frontend           & Next.js 14 \\
+Orchestration      & Docker Compose \\
+Alerting email     & SMTP ou Resend API \\
+\end{tabular}
+\end{boitetech}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+CERT-FR RSS Feeds (7 flux)
+         |
+         v
+  Backend Node.js/TS
+  |- Cron job (toutes les 15 min)
+  |- Dedoublonnage par GUID
+  |- Stockage PostgreSQL
+  `- Alertes email (SMTP / Resend)
+         |
+         v
+  Frontend Next.js
+  `- Dashboard : items, filtres, pagination, logs
+\end{verbatim}
+\caption{Architecture de CertFR Monitor}
+\end{figure}
+
+\subsubsection{Flux surveilles}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llp{7cm}}
+\toprule
+\textbf{Type} & \textbf{Label} & \textbf{Contenu} \\
+\midrule
+\texttt{alerte}    & Alertes de securite  & Vulnerabilites critiques actives \\
+\texttt{avis}      & Avis de securite     & Bulletins de mise a jour \\
+\texttt{cti}       & Menaces et incidents & Rapports de threat intelligence \\
+\texttt{ioc}       & IOC                  & Indicateurs de compromission \\
+\texttt{dur}       & Durcissement         & Recommandations de configuration \\
+\texttt{scada}     & SCADA                & Bulletins systemes industriels \\
+\texttt{actualite} & Actualites           & Bulletins d'information generaux \\
+\bottomrule
+\end{tabular}
+\caption{Flux RSS CERT-FR surveilles}
+\end{table}
+
+\subsubsection{API REST exposee}
+
+\begin{lstlisting}[language=bash, caption=Endpoints API CertFR Monitor]
+GET  /api/items   # Liste paginee (filtres: feedType, limit, offset)
+GET  /api/stats   # Compteurs par flux
+GET  /api/logs    # Historique des fetches
+GET  /api/feeds   # Definitions des flux
+POST /api/fetch   # Declenchement manuel d'un fetch
+GET  /api/health  # Health check
+\end{lstlisting}
+
+%---------------------------------------------------------------
+\subsection{Campagne de sensibilisation au phishing (GoPhish)}
+%---------------------------------------------------------------
+
+\subsubsection{Contexte et objectifs}
+
+La sensibilisation des utilisateurs au phishing est un axe majeur de la
+strategie de securite de l'ETNIC. L'objectif de cette mission etait de
+deployer une infrastructure de campagne de phishing simule en interne,
+permettant de mesurer le taux de clics sur des emails frauduleux et d'en
+tirer des indicateurs pour orienter les formations.
+
+\subsubsection{Architecture deployee}
+
+\begin{boitetech}{Stack technique}
+\begin{itemize}[noitemsep]
+  \item \textbf{GoPhish} : plateforme open-source de gestion de campagnes
+        phishing
+  \item \textbf{Docker Compose} : conteneurisation de l'application
+  \item \textbf{Nginx Proxy Manager (NPM)} : reverse proxy TLS partage
+  \item \textbf{Cloudflare} : DNS et protection du domaine
+        \texttt{preda.be}
+\end{itemize}
+\end{boitetech}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+Cloudflare (orange cloud)
+       |
+       v
+Nginx Proxy Manager (npm-network)
+  |- gophish.preda.be  -> gophish:3333  (admin UI)
+  `- phish.preda.be    -> gophish:8080  (landing pages)
+\end{verbatim}
+\caption{Architecture de l'infrastructure GoPhish}
+\end{figure}
+
+L'interface d'administration est exposee sur \texttt{gophish.preda.be}
+(acces restreint par liste d'acces NPM), tandis que les pages de phishing
+simule sont servies sur \texttt{phish.preda.be} avec certificat TLS
+Cloudflare origin.
+
+\subsubsection{Resultats}
+
+La mission s'est limitee a la mise en place et la validation technique de
+l'infrastructure. Aucune campagne n'a ete lancee contre des utilisateurs
+reels durant le stage : les contraintes organisationnelles (validation RH,
+communication prealable, accord de la direction) necessaires a toute
+campagne de sensibilisation interne n'ont pas pu etre reunies dans le delai
+imparti.
+
+\begin{itemize}
+  \item Infrastructure complete deployee, testee et validee en environnement
+        isole ;
+  \item Scenarios de phishing simule crees et verifies (envoi test vers
+        adresses internes de controle) ;
+  \item TLS fonctionnel sur les deux domaines via Cloudflare origin cert ;
+  \item Documentation technique remise a l'equipe P3SI pour permettre le
+        lancement d'une campagne reelle lors d'une prochaine initiative de
+        sensibilisation.
+\end{itemize}
+
+%---------------------------------------------------------------
+\subsection{Script de diagnostic reseau (PNDS)}
+%---------------------------------------------------------------
+
+\subsubsection{Contexte et objectifs}
+
+Le Service Desk de l'ETNIC traite regulierement des tickets lies a des
+problemes reseau (DNS, VPN, connectivite). Dans la quasi-totalite des cas,
+les memes informations de base manquent : configuration IP, etat des
+services VPN/EDR, resolutions DNS. Le technicien doit relancer l'utilisateur
+pour obtenir ces donnees, allongeant inutilement les delais de resolution.
+
+L'objectif etait de developper un script PowerShell autonome, executable
+sans droits administrateur, qui collecte automatiquement toutes ces
+informations et genere un rapport pret a etre joint au ticket.
+
+\subsubsection{Fonctionnalites}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{clX}
+\toprule
+\textbf{\#} & \textbf{Section} & \textbf{Donnees collectees} \\
+\midrule
+1  & Configuration IP    & \texttt{ipconfig /all} complet \\
+2  & DNS systeme         & Resolution de tous les hotes internes et externes \\
+3  & DNS internes forces & Resolutions sur chacun des 4 DNS internes ETNIC \\
+4  & Ping                & Cibles internes (IP et noms) et externes \\
+5  & Traceroute          & \texttt{tracert} vers ressources internes et externes \\
+6  & Services            & F5 DNS Relay, Cisco Umbrella, AnyConnect VPN, BIG-IP \\
+7  & Detection VPN       & Interfaces reseau et processus VPN actifs \\
+8  & Table de routage    & \texttt{route print} complet \\
+9  & Test HTTPS          & Code retour HTTP et URL finale \\
+10 & Cache DNS           & \texttt{Get-DnsClientCache} \\
+\bottomrule
+\end{tabularx}
+\caption{Sections du rapport genere par PNDS}
+\end{table}
+
+\subsubsection{Deploiement}
+
+Le script est concu pour un double usage :
+\begin{itemize}
+  \item \textbf{Manuel} : execution directe via
+        \texttt{powershell.exe -ExecutionPolicy Bypass -File
+        DiagnosticReseau.ps1} ;
+  \item \textbf{GPO} : deploiement de masse via Group Policy avec raccourci
+        Bureau, permettant a n'importe quel utilisateur de lancer le
+        diagnostic en un clic.
+\end{itemize}
+
+Le fichier de sortie est automatiquement horodate et depose sur le Bureau :
+\texttt{Diagnostic\_Reseau\_YYYYMMDD\_HHmmss.txt}.
+
+%---------------------------------------------------------------
+\subsection{Croisement Rapid7 et ServiceNow (RapidETNIC)}
+%---------------------------------------------------------------
+
+\subsubsection{Contexte et objectifs}
+
+L'ETNIC dispose de deux sources de verite pour son parc de serveurs :
+
+\begin{itemize}
+  \item \textbf{Rapid7 InsightVM} : scanner de vulnerabilites qui maintient
+        un inventaire des assets effectivement scannes sur le reseau ;
+  \item \textbf{ServiceNow CMDB} : base de configuration officielle listant
+        tous les serveurs et leur statut de cycle de vie (\textit{Installe},
+        \textit{Absent}, \textit{Mis hors service}, etc.).
+\end{itemize}
+
+Ces deux sources divergent regulierement : des serveurs decommissionnes
+dans SNOW restent scannes dans Rapid7, tandis que des serveurs actifs dans
+SNOW sont absents des scans. L'objectif de RapidETNIC est d'automatiser la
+detection et le traitement de ces ecarts.
+
+\subsubsection{Fonctionnement}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+fetch_r7.py           fetch_snow.py
+     |                      |
+     v                      v
+ results/r7/          results/snow/
+      \                    /
+       \______fetch.py____/
+                |
+      Algorithme de matching
+      (hostname primaire, IP publique fallback)
+                |
+       +--------+--------+
+       |        |        |
+    decomm   absent   matched
+    in_r7    in_r7   outdated
+       |
+  API on-prem InsightVM
+  - Tag "deprecated"
+  - Suppression agent
+\end{verbatim}
+\caption{Pipeline RapidETNIC}
+\end{figure}
+
+\subsubsection{Algorithme de matching}
+
+Le matching entre les deux sources repose sur le \textbf{hostname normalise}
+comme cle primaire. Une specificite importante du CMDB ETNIC est que le
+champ \texttt{name} de \texttt{cmdb\_ci\_server} contient le modele
+materiel (ex. \texttt{POWEREDGE R730}), et non le hostname. Ce dernier se
+trouve dans le champ \texttt{asset\_tag}, apres le dernier caractere
+\texttt{/} :
+
+\begin{minted}[bgcolor=codebg, fontsize=\small]{text}
+SERVEUR_002046/SETNIC04J  ->  hostname = SETNIC04J
+/SESX36                   ->  hostname = SESX36
+SERVEUR_002424            ->  pas de hostname -> non-matche
+\end{minted}
+
+Un \textbf{fallback IP} est disponible mais uniquement pour les IPs
+publiques : les plages privees (\texttt{10.x}, \texttt{172.16-31.x},
+\texttt{192.168.x}) sont exclues pour eviter les faux positifs lies aux
+collisions d'adresses entre VLANs.
+
+\subsubsection{Categories de resultats}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{lXl}
+\toprule
+\textbf{Categorie} & \textbf{Signification} & \textbf{Action} \\
+\midrule
+\texttt{decommissioned\_in\_r7} & SNOW = Mis hors service, encore scanne
+  & Tag + suppression agent \\
+\texttt{installed\_not\_in\_r7} & SNOW = Installe, absent de Rapid7
+  & Alerte \\
+\texttt{matched\_outdated}      & Dans les deux, OS EOL ou scan obsolete
+  & Alerte \\
+\texttt{matched\_current}       & Dans les deux, a jour
+  & OK \\
+\texttt{in\_r7\_only}           & Scanne, aucun CI dans SNOW
+  & A investiguer \\
+\bottomrule
+\end{tabularx}
+\caption{Categories de resultats de RapidETNIC}
+\end{table}
+
+\subsubsection{Actions automatisees sur l'API InsightVM on-premise}
+
+Pour chaque asset de la categorie \texttt{decommissioned\_in\_r7}, le
+script effectue automatiquement deux actions via l'API REST de la console
+InsightVM on-premise :
+
+\begin{enumerate}
+  \item \textbf{Application du tag \texttt{deprecated}} : creation du tag
+        custom si absent, puis assignation via
+        \texttt{PUT /api/3/assets/\{id\}/tags/\{tagId\}} ;
+  \item \textbf{Suppression de l'agent scanner} : identification de l'agent
+        par GUID (\texttt{source == "R7 Agent"}) dans le Cloud API,
+        correspondance avec l'agent on-prem par la cle, puis
+        \texttt{DELETE /api/3/agents/\{agentId\}}.
+\end{enumerate}
+
+L'asset lui-meme n'est pas supprime : les scans reseau continuent de le
+detecter. Seul le lien d'agent est retire.
+
+\begin{minted}[bgcolor=codebg, fontsize=\small]{python}
+# Extrait : fallback IP uniquement si IP publique
+r7 = r7_by_host.get(hostname)
+if r7 is None and ip and not is_private_ip(ip):
+    r7 = r7_by_ip.get(ip)
+\end{minted}
+
+\subsubsection{Resultats}
+
+\begin{boitetech}{Metriques -- execution du 18 mai 2026}
+\begin{itemize}[noitemsep]
+  \item \textbf{Assets Rapid7 analyses :}
+        % [TODO: completer avec les chiffres reels]
+  \item \textbf{CIs ServiceNow traites :}
+  \item \textbf{Assets decommissionnes encore scannes :}
+  \item \textbf{Assets installes absents de Rapid7 :}
+  \item \textbf{Assets avec OS EOL ou scan obsolete :}
+\end{itemize}
+\end{boitetech}
+
+%===============================================================
+%  6. COMPETENCES ACQUISES ET BILAN
+%===============================================================
+\section{Competences acquises et bilan}
+
+\subsection{Competences techniques}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\linewidth}{lXl}
+\toprule
+\textbf{Domaine} & \textbf{Competence} & \textbf{Niveau} \\
+\midrule
+SIEM/SOAR    & Architecture, use cases, automatisation
+  & \textcolor{etnicgreen}{\textbf{+}} \\
+API Security & Rapid7 InsightVM REST, ServiceNow REST
+  & \textcolor{etnicgreen}{\textbf{++}} \\
+Python       & Scripting, requetes API, traitement JSON
+  & \textcolor{etnicgreen}{\textbf{++}} \\
+PowerShell   & Scripting Windows, deploiement GPO
+  & \textcolor{etnicgreen}{\textbf{+}} \\
+Docker       & Compose, reseaux, reverse proxy
+  & \textcolor{etnicgreen}{\textbf{++}} \\
+Node.js/TS   & Express, cron jobs, TypeScript
+  & \textcolor{etnicgreen}{\textbf{+}} \\
+Next.js      & Dashboard React, SSR
+  & \textcolor{etnicgreen}{\textbf{+}} \\
+PostgreSQL   & Modelisation, dedoublonnage, requetes
+  & \textcolor{etnicgreen}{\textbf{+}} \\
+Phishing     & GoPhish, infrastructure de campagne
+  & \textcolor{etnicgreen}{\textbf{++}} \\
+Vuln. mgmt   & Rapid7 InsightVM, CMDB, cycle de vie assets
+  & \textcolor{etnicgreen}{\textbf{++}} \\
+\bottomrule
+\end{tabularx}
+\caption{Competences techniques acquises (+ : consolide, ++ : maitrise)}
+\end{table}
+
+\subsection{Competences transversales}
+
+\begin{itemize}
+  \item \textbf{Travail en autonomie} : chaque mission a ete confiee avec
+        un niveau d'autonomie croissant, des specifications initiales a
+        la livraison ;
+  \item \textbf{Documentation technique} : redaction de READMEs, de
+        rapports d'execution et de procedures utilisables par l'equipe ;
+  \item \textbf{Communication} : restitution reguliere des avancees a
+        Laurent Servais et presentation des outils aux equipes ;
+  \item \textbf{Gestion de version} : utilisation systematique de Git
+        (GitHub et GitLab interne ETNIC) pour tous les projets.
+\end{itemize}
+
+\subsection{Bilan personnel}
+
+Ce stage a confirme mon interet pour la cybersecurite operationnelle, en
+particulier l'intersection entre le developpement d'outils et les
+operations de securite. J'ai pu constater que dans un SOC reel, la valeur
+ajoutee ne reside pas uniquement dans la detection, mais egalement dans
+l'automatisation des taches repetitives et la qualite des donnees
+d'inventaire.
+
+% [TODO: ajouter reflexions personnelles]
+
+%===============================================================
+%  7. CONCLUSION
+%===============================================================
+\section{Conclusion}
+
+Ce stage de douze semaines a l'ETNIC m'a permis de contribuer concretement
+a l'amelioration de la posture de securite d'un operateur ICT critique. A
+travers cinq missions de natures complementaires (sensibilisation, outillage,
+veille et gestion des vulnerabilites) j'ai pu mettre en pratique l'ensemble
+des competences acquises durant mon Master en cybersecurite.
+
+Les outils developpes (PNDS, CertFR Monitor, RapidETNIC) ont ete livres
+operationnels et documentes, et sont destines a etre maintenus et reutilises
+par les equipes P3SI.
+
+Ce stage constitue une etape fondamentale dans ma formation : il m'a permis
+de passer du modele theorique a la realite operationnelle d'un SOC, et de
+mesurer l'importance de l'automatisation, de la rigueur documentaire et de
+la collaboration dans un environnement de cybersecurite professionnel.
+
+%===============================================================
+%  BIBLIOGRAPHIE
+%===============================================================
+\newpage
+\section*{Bibliographie}
+\addcontentsline{toc}{section}{Bibliographie}
+
+\begin{enumerate}
+  \item SANS Institute. \textit{SOAR: How to Identify and Implement Security
+        Automation Use Cases}. SANS Reading Room, 2023.
+  \item Gartner. \textit{A Guidance Framework for Architecting and Deploying
+        a Modern SIEM Solution}. Gartner Research, 2023.
+  \item IBM Security. \textit{How to Create and Maintain Security Monitoring
+        Use Cases for Your SIEM}. IBM, 2022.
+  \item Cyberun. \textit{Cyberun \#44}. Cyberun Magazine, 2026.
+  \item CERT-FR. \textit{Publications de securite}.
+        \url{https://www.cert.ssi.gouv.fr/}. Consulte en avril--mai 2026.
+  \item Rapid7. \textit{InsightVM REST API Documentation}.
+        \url{https://help.rapid7.com/insightvm/en-us/api/}.
+        Consulte en avril--mai 2026.
+  \item ServiceNow. \textit{REST API Reference -- Table API}.
+        \url{https://docs.servicenow.com}. Consulte en mars--mai 2026.
+  \item MITRE ATT\&CK. \textit{Enterprise Matrix}.
+        \url{https://attack.mitre.org/}. Consulte en 2026.
+\end{enumerate}
+
+%===============================================================
+%  ANNEXES
+%===============================================================
+\newpage
+\appendix
+\section{Convention de stage}
+
+La convention de stage originale signee entre l'ULB, l'ETNIC et le
+stagiaire (STAG-Y-006) est disponible en document separe.
+
+% [TODO: inserer scan ou referencer fichier externe]
+
+\section{Extraits de code}
+
+\subsection{RapidETNIC -- is\_private\_ip}
+
+\begin{minted}[bgcolor=codebg, fontsize=\small]{python}
+import ipaddress
+
+_PRIVATE_NETS = [
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("169.254.0.0/16"),
+]
+
+def is_private_ip(ip: str) -> bool:
+    try:
+        addr = ipaddress.ip_address(ip)
+        return any(addr in net for net in _PRIVATE_NETS)
+    except ValueError:
+        return True  # unparseable -> traiter comme prive
+\end{minted}
+
+\subsection{CertFR Monitor -- cron fetch (TypeScript)}
+
+\begin{minted}[bgcolor=codebg, fontsize=\small]{typescript}
+// Backend : polling RSS toutes les 15 minutes
+cron.schedule(`*/${FETCH_INTERVAL_MINUTES} * * * *`, async () => {
+  for (const feed of FEEDS) {
+    const items = await fetchRSS(feed.url);
+    for (const item of items) {
+      await db.upsert(item, { onConflict: 'guid' });
+      if (item.isNew) await sendAlert(item, feed);
+    }
+  }
+});
+\end{minted}
+
+\end{document}
