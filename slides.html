@@ -681,42 +681,37 @@ Nginx Proxy Manager
      ══════════════════════════════════════════════════════════ -->
 <section data-transition="slide">
   <div class="accent-line"></div>
-  <h2>RapidETNIC · Résultats <span class="chip green">18 mai 2026</span></h2>
-  <div class="grid-3" style="margin-top:0.5em">
-    <div class="stat fragment" style="border-color:rgba(255,71,87,0.4)">
-      <span class="num" style="color:var(--red)"><i class="fa-solid fa-skull-crossbones"></i></span>
-      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
-        Décommissionnés<br>encore scannés
-      </div>
-      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">Tag + suppression agent</div>
-    </div>
-    <div class="stat fragment" style="border-color:rgba(255,165,0,0.4)">
-      <span class="num" style="color:orange"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
-        Installés absents<br>de Rapid7
-      </div>
-      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">Hors scope scan</div>
+  <h2>RapidETNIC · Résultats <span class="chip green">26 mai 2026</span></h2>
+
+  <!-- Top stats row -->
+  <div class="grid-4" style="margin-top:0.5em">
+    <div class="stat fragment">
+      <span class="num">3 156</span>
+      <div class="label">Assets Rapid7</div>
     </div>
     <div class="stat fragment">
-      <span class="num" style="color:var(--green)"><i class="fa-solid fa-circle-check"></i></span>
-      <div class="label" style="color:var(--text);font-size:0.5em;margin-top:0.4em">
-        Matchés<br>à jour
-      </div>
-      <div style="font-size:0.38em;color:var(--muted);margin-top:0.3em">OK</div>
+      <span class="num">2 345</span>
+      <div class="label">CIs ServiceNow</div>
+    </div>
+    <div class="stat fragment">
+      <span class="num" style="color:var(--green)">1 249</span>
+      <div class="label">Matchés à jour</div>
+    </div>
+    <div class="stat fragment" style="border-color:rgba(255,71,87,0.4)">
+      <span class="num" style="color:var(--red)">6</span>
+      <div class="label">Décomm. encore scannés</div>
     </div>
   </div>
-  <div style="margin-top:0.6em;font-size:0.48em;color:var(--muted);text-align:center">
-    ⬆ Compléter avec les métriques réelles avant la présentation
-  </div>
 
-  <div class="card fragment" style="margin-top:0.6em">
-    <div class="card-title"><i class="fa-solid fa-table"></i> 5 catégories de sortie</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3em 1.5em;font-size:0.48em;margin-top:0.3em">
-      <span><span class="chip red">decomm_in_r7</span> SNOW hors service + encore scanné</span>
-      <span><span class="chip">installed_not_in_r7</span> Installé mais absent de Rapid7</span>
-      <span><span class="chip">matched_outdated</span> OS EOL ou scan &gt; 90j</span>
-      <span><span class="chip green">matched_current</span> Tout OK</span>
-      <span><span class="chip blue">in_r7_only</span> Pas de CI dans SNOW</span>
+  <div class="card fragment" style="margin-top:0.5em">
+    <div class="card-title"><i class="fa-solid fa-table"></i> Détail des gaps</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3em 1em;font-size:0.48em;margin-top:0.3em">
+      <span><span class="chip red">6</span> décomm. encore scannés &rarr; tag + agent supprimé</span>
+      <span><span class="chip">207</span> installés absents de Rapid7</span>
+      <span><span class="chip">52</span> matchés mais outdated (OS EOL / scan &gt; 90j)</span>
+      <span><span class="chip green">1 249</span> matchés, tout OK</span>
+      <span><span class="chip blue">272</span> dans R7 uniquement, aucun CI SNOW</span>
+      <span><span class="chip">169</span> OS EOL détectés (5,4% du parc)</span>
     </div>
   </div>
   <div class="slide-footer">Réalisations · RapidETNIC</div>

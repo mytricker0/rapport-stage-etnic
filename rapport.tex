@@ -683,14 +683,17 @@ if r7 is None and ip and not is_private_ip(ip):
 
 \subsubsection{Resultats}
 
-\begin{boitetech}{Metriques -- execution du 18 mai 2026}
+\begin{boitetech}{Metriques -- execution du 26 mai 2026}
 \begin{itemize}[noitemsep]
-  \item \textbf{Assets Rapid7 analyses :}
-        % [TODO: completer avec les chiffres reels]
-  \item \textbf{CIs ServiceNow traites :}
-  \item \textbf{Assets decommissionnes encore scannes :}
-  \item \textbf{Assets installes absents de Rapid7 :}
-  \item \textbf{Assets avec OS EOL ou scan obsolete :}
+  \item \textbf{Assets Rapid7 analyses :} 3 156
+  \item \textbf{CIs ServiceNow traites :} 2 345
+  \item \textbf{Assets decommissionnes encore scannes :} 6
+        (tag \texttt{deprecated} applique + agent supprime)
+  \item \textbf{Assets installes absents de Rapid7 :} 207
+  \item \textbf{Assets matches a jour :} 1 249
+  \item \textbf{Assets matches mais outdated (OS EOL ou scan > 90j) :} 52
+  \item \textbf{Assets dans R7 sans CI SNOW :} 272
+  \item \textbf{OS EOL detectes :} 169 (5,4\% du parc)
 \end{itemize}
 \end{boitetech}
 
