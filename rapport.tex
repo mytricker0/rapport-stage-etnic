@@ -7,14 +7,13 @@
 \usepackage{lipsum}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[french]{babel}
 \usepackage{color}
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{listings}
-\usepackage{minted}
+%\usepackage{minted}  % replaced by listings (latexminted broken on Python 3.14)
 \usepackage{tcolorbox}
 \usepackage{pgfgantt}
 \usepackage{geometry}
@@ -621,11 +620,11 @@ materiel (ex. \texttt{POWEREDGE R730}), et non le hostname. Ce dernier se
 trouve dans le champ \texttt{asset\_tag}, apres le dernier caractere
 \texttt{/} :
 
-\begin{minted}[bgcolor=codebg, fontsize=\small]{text}
+\begin{lstlisting}[basicstyle=\ttfamily\small, backgroundcolor=\color{codebg}, frame=single]
 SERVEUR_002046/SETNIC04J  ->  hostname = SETNIC04J
 /SESX36                   ->  hostname = SESX36
 SERVEUR_002424            ->  pas de hostname -> non-matche
-\end{minted}
+\end{lstlisting}
 
 Un \textbf{fallback IP} est disponible mais uniquement pour les IPs
 publiques : les plages privees (\texttt{10.x}, \texttt{172.16-31.x},
@@ -674,12 +673,12 @@ InsightVM on-premise :
 L'asset lui-meme n'est pas supprime : les scans reseau continuent de le
 detecter. Seul le lien d'agent est retire.
 
-\begin{minted}[bgcolor=codebg, fontsize=\small]{python}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\small, backgroundcolor=\color{codebg}, frame=single]
 # Extrait : fallback IP uniquement si IP publique
 r7 = r7_by_host.get(hostname)
 if r7 is None and ip and not is_private_ip(ip):
     r7 = r7_by_ip.get(ip)
-\end{minted}
+\end{lstlisting}
 
 \subsubsection{Resultats}
 
@@ -805,55 +804,5 @@ la collaboration dans un environnement de cybersecurite professionnel.
   \item MITRE ATT\&CK. \textit{Enterprise Matrix}.
         \url{https://attack.mitre.org/}. Consulte en 2026.
 \end{enumerate}
-
-%===============================================================
-%  ANNEXES
-%===============================================================
-\newpage
-\appendix
-\section{Convention de stage}
-
-La convention de stage originale signee entre l'ULB, l'ETNIC et le
-stagiaire (STAG-Y-006) est disponible en document separe.
-
-% [TODO: inserer scan ou referencer fichier externe]
-
-\section{Extraits de code}
-
-\subsection{RapidETNIC -- is\_private\_ip}
-
-\begin{minted}[bgcolor=codebg, fontsize=\small]{python}
-import ipaddress
-
-_PRIVATE_NETS = [
-    ipaddress.ip_network("10.0.0.0/8"),
-    ipaddress.ip_network("172.16.0.0/12"),
-    ipaddress.ip_network("192.168.0.0/16"),
-    ipaddress.ip_network("127.0.0.0/8"),
-    ipaddress.ip_network("169.254.0.0/16"),
-]
-
-def is_private_ip(ip: str) -> bool:
-    try:
-        addr = ipaddress.ip_address(ip)
-        return any(addr in net for net in _PRIVATE_NETS)
-    except ValueError:
-        return True  # unparseable -> traiter comme prive
-\end{minted}
-
-\subsection{CertFR Monitor -- cron fetch (TypeScript)}
-
-\begin{minted}[bgcolor=codebg, fontsize=\small]{typescript}
-// Backend : polling RSS toutes les 15 minutes
-cron.schedule(`*/${FETCH_INTERVAL_MINUTES} * * * *`, async () => {
-  for (const feed of FEEDS) {
-    const items = await fetchRSS(feed.url);
-    for (const item of items) {
-      await db.upsert(item, { onConflict: 'guid' });
-      if (item.isNew) await sendAlert(item, feed);
-    }
-  }
-});
-\end{minted}
 
 \end{document}
