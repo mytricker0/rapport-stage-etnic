@@ -1,5 +1,3 @@
-# PDF outputs (compile locally)
-*.pdf
 *:Zone.Identifier
 
 # LaTeX build artifacts
